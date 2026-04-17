@@ -126,4 +126,20 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
 
   }
 
+  void _onDeleteImage(
+      DeleteImage event,
+      Emitter<CameraState> emit
+      ) {
+    if(state is !CameraReady) return;
+    final s = state as CameraReady;
+    if(s.imageFile != null) {
+      s.imageFile!.deleteSync();
+    }
+    emit(s.copyWith(
+      clearSnackbar: true,
+      imageFile: null,
+      snackbarMessage: "Gambar dihapus"
+    ));
+  }
+
 }
