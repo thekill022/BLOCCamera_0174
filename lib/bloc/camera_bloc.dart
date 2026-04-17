@@ -6,4 +6,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class CameraBloc extends Bloc<CameraEvent, CameraState> {
   late List<CameraDescription> _camera;
 
+  CameraBloc() : super(CameraInitial()) {
+    on<IntializeCamera>(_onInitialize);
+    on<SwitchCamera>(_onSwitchCamera);
+    on<ToggleFlash>(_onToggleFlash);
+    on<TakePicture>(_onTakePicture);
+    on<TapToFocus>(_onTapToFocus);
+    on<PickImageFromGallery>(_onPickImage);
+    on<OpenCameraAndCapture>(_onOpenCamera);
+    on<DeleteImage>(_onDeleteImage);
+    on<ClearSnackbar>(_onClearSnackBar);
+    on<RequestPermission>(_onRequestPermisson);
+  }
+
 }
