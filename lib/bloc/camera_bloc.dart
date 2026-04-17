@@ -4,5 +4,6 @@ import 'package:cameraapp/bloc/camera_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CameraBloc extends Bloc<CameraEvent, CameraState> {
+  late List<CameraDescription> _camera;
 
 }
