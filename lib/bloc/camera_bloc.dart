@@ -19,4 +19,12 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
     on<RequestPermission>(_onRequestPermisson);
   }
 
+  Future<void> _onInitialize(
+      IntializeCamera event,
+      Emitter<CameraState> emit
+      ) async {
+    _camera = await availableCameras();
+    await _setupController(emit, 0);
+  }
+
 }
