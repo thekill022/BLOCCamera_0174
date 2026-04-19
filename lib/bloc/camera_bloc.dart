@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:camera/camera.dart';
 import 'package:cameraapp/bloc/camera_event.dart';
 import 'package:cameraapp/bloc/camera_state.dart';
+import 'package:cameraapp/helpers/storage_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
