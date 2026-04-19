@@ -11,6 +11,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../pages/camerapage.dart';
+
 class CameraBloc extends Bloc<CameraEvent, CameraState> {
   late List<CameraDescription> _camera;
 
