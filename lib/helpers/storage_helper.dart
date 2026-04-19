@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 
 class StorageHelper {
-  static Future<String> _getFolderPath() async{
-    final dir = Directory('/storage/emulated/0/DCIM/FlutterNativeCamBloc');
-    if(!await dir.exists()) {
+  static Future<String> _getFolderPath() async {
+    final baseDir = await getApplicationDocumentsDirectory();
+    final dir = Directory('${baseDir.path}/camera_images');
+    if (!await dir.exists()) {
       await dir.create(recursive: true);
     }
     return dir.path;

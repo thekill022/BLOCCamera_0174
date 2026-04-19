@@ -88,14 +88,25 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
       PickImageFromGallery event,
       Emitter<CameraState> emit
       ) async {
-    final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.gallery);
-    if(picked != null && state is CameraReady) {
-      final file = File(picked.path);
-      emit((state as CameraReady).copyWith(
-        imageFile: file,
-        snackbarMessage: "Berhasil memilih dari galeri"
-      ));
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(source: ImageSource.gallery);
+
+      if (picked != null && state is CameraReady) {
+        final saved = await StorageHelper.saveImage(File(picked.path), 'gallery');
+        print("[Gallery] Saved to: ${saved.path}");
+
+        emit((state as CameraReady).copyWith(
+          imageFile: saved,
+          snackbarMessage: "Berhasil memilih dari galeri"
+        ));
+      }
+    } catch (e) {
+      if (state is CameraReady) {
+        emit((state as CameraReady).copyWith(
+          snackbarMessage: "Gagal memilih gambar: \$e"
+        ));
+      }
     }
   }
 
@@ -121,23 +132,39 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
     );
 
     if(file != null) {
-      final saved = await StorageHelper.saveImage(file, 'camere');
-      emit((state as CameraReady).copyWith(
-        imageFile: saved,
-        snackbarMessage: "Tersimpan : ${saved.path}"
-      ));
+      try {
+        final saved = await StorageHelper.saveImage(file, 'camera');
+        print("[Camera] Saved to: ${saved.path}");
+        emit((state as CameraReady).copyWith(
+          imageFile: saved,
+          snackbarMessage: "Tersimpan: ${saved.path}"
+        ));
+      } catch (e) {
+        emit((state as CameraReady).copyWith(
+          snackbarMessage: "Gagal menyimpan: $e"
+        ));
+      }
     }
 
   }
 
-  void _onDeleteImage(
+  Future<void> _onDeleteImage(
       DeleteImage event,
       Emitter<CameraState> emit
-      ) {
+      ) async {
     if(state is !CameraReady) return;
     final s = state as CameraReady;
     if(s.imageFile != null) {
-      s.imageFile!.deleteSync();
+      try {
+        if (await s.imageFile!.exists()) {
+          await s.imageFile!.delete();
+          print("[Delete] File dihapus: ${s.imageFile!.path}");
+        } else {
+          print("[Delete] File sudah tidak ada: ${s.imageFile!.path}");
+        }
+      } catch (e) {
+        print("[Delete] Gagal hapus file: $e");
+      }
     }
     emit(s.copyWith(
       clearSnackbar: true,
@@ -193,8 +220,9 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
       ) async {
     Map<Permission, PermissionStatus> statuses = await [
       Permission.camera,
+      Permission.photos,
       Permission.storage,
-      Permission.manageExternalStorage
+      Permission.manageExternalStorage,
     ].request();
 
     final denied = statuses.values.any((status) => status.isDenied || status.isPermanentlyDenied);
